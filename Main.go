@@ -18,6 +18,9 @@ func main() {
 		return
 	}
 
+	// it could be possible to compute a distance to a point, on the basis of this webservice :
+	// $ curl "http://api-adresse.data.gouv.fr/search/?type=city&q=Carcassonne" |jq
+
 	// print new data
 	for _, ad := range ads {
 		PrintText(ad)
