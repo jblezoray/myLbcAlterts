@@ -13,10 +13,10 @@ type AdData struct {
 	dateStr        string
 	url            string
 	price          int
-	category       string
 	locationTown   string
 	locationRegion string
 	thumbSrc       string
+	rawDom         *goquery.Selection
 }
 
 const NoPrice = -1
@@ -53,6 +53,7 @@ func parseAd(s *goquery.Selection) AdData {
 	var priceStr = s.Find("h3.item_price").Text()
 	priceStr = strings.Replace(priceStr, "€", "", -1)
 	priceStr = strings.TrimSpace(priceStr)
+	priceStr = strings.Replace(priceStr, " ", "", -1)
 	priceInt, err := strconv.Atoi(priceStr)
 	if err != nil {
 		priceInt = NoPrice
@@ -67,8 +68,8 @@ func parseAd(s *goquery.Selection) AdData {
 	var splitedLocation = strings.Split(rawLocation, "/")
 	var locationTown, locationRegion string
 	if len(splitedLocation) == 2 {
-		locationTown = splitedLocation[0]
-		locationRegion = splitedLocation[1]
+		locationTown = strings.TrimSpace(splitedLocation[0])
+		locationRegion = strings.TrimSpace(splitedLocation[1])
 	}
 
 	return AdData{
@@ -76,10 +77,10 @@ func parseAd(s *goquery.Selection) AdData {
 		dateStr:        dateStr,
 		url:            url,
 		price:          priceInt,
-		category:       category,
 		locationTown:   locationTown,
 		locationRegion: locationRegion,
 		thumbSrc:       thumbSrc,
+		rawDom:         s,
 	}
 }
 
