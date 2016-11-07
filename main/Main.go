@@ -5,11 +5,16 @@ import "fmt"
 func main() {
 	// retrieve data about previous launches / read config
 	// TODO
-	query := "porsche%20924"
+	// query := "porsche%20924"
+	config, err := ReadConfigFile("sampleConf.json")
+	if err != nil {
+		fmt.Print(err.Error)
+		return
+	}
 
 	// build URL to scrap
 	// TODO
-	url := "https://www.leboncoin.fr/voitures/offres/bretagne/occasions/?th=1&q=" + query
+	url := "https://www.leboncoin.fr/voitures/offres/bretagne/occasions/?th=1&q=" + config.SearchTerms
 
 	// scrap new data
 	ads, err := Scraper(url)
