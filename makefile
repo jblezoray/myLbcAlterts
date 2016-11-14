@@ -8,6 +8,9 @@ BINARY=lbcAlerts
 $(BINARY): $(SOURCES)
 	go build -o ${BINARY} ${SOURCES}
 
+run: $(BINARY)
+	./$(BINARY)
+
 .PHONY: clean
 clean:
 	rm -f ${BINARY}
