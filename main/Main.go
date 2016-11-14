@@ -28,7 +28,9 @@ func main() {
 
 	// print new data
 	for _, ad := range ads {
-		PrintText(ad)
+		PrintTextAbridged(ad)
+		//PrintText(ad)
+		//PrintLineSeparator()
 	}
 
 	// build & send a mail

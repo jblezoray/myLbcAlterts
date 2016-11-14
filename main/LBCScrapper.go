@@ -9,6 +9,7 @@ import (
 )
 
 type AdData struct {
+	id             int
 	title          string
 	dateStr        string
 	url            string
@@ -19,6 +20,7 @@ type AdData struct {
 	rawDom         *goquery.Selection
 }
 
+const NoId = -1
 const NoPrice = -1
 const NoURL = "noUrl"
 const DefaultThumb = "http://static.leboncoin.fr/img/no-picture.png"
@@ -39,6 +41,17 @@ func parseAd(s *goquery.Selection) AdData {
 		url = NoURL
 	} else {
 		url = "http:" + url
+	}
+
+	// parse id
+	var id = NoId
+	idStr, exists := s.Find("div.saveAd").Attr("data-savead-id")
+	if exists {
+		var err error
+		id, err = strconv.Atoi(idStr)
+		if err != nil {
+			id = NoId
+		}
 	}
 
 	// parse thumbSrc
@@ -73,6 +86,7 @@ func parseAd(s *goquery.Selection) AdData {
 	}
 
 	return AdData{
+		id:             id,
 		title:          title,
 		dateStr:        dateStr,
 		url:            url,
