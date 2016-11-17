@@ -14,9 +14,10 @@ func main() {
 
 	// build URL to scrap
 	// TODO
-	url := "https://www.leboncoin.fr/voitures/offres/bretagne/occasions/?th=1&q=" + config.SearchTerms
-
+	url := "https://www.leboncoin.fr/voitures/offres/bretagne/occasions/?q=" + config.SearchTerms
+	//https://www.leboncoin.fr/voitures/offres/bretagne/occasions/?q=porsche%20924&o=2
 	// scrap new data
+	fmt.Println("Scrapping ", url)
 	ads, err := Scraper(url)
 	if err != nil {
 		fmt.Print(err.Error)
