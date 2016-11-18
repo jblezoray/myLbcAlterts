@@ -2,6 +2,7 @@ package main
 
 import (
 	"errors"
+	"fmt"
 	"strconv"
 	"strings"
 
@@ -98,20 +99,43 @@ func parseAd(s *goquery.Selection) AdData {
 	}
 }
 
-func Scraper(url string) ([]AdData, error) {
+func scraperSinglePage(url string) ([]AdData, error) {
 	doc, err := goquery.NewDocument(url)
 	if err != nil {
 		return nil, errors.New("cannot query the URL" + url)
 	}
 
-	var ads = make([]AdData, 0)
+	fmt.Println("Scrapping ", url)
 
+	var ads = make([]AdData, 0)
 	selection := doc.Find("section.tabsContent li")
 	selection.Each(func(i int, sel *goquery.Selection) {
-		//fmt.Printf("%d\n", i)
 		currentAd := parseAd(sel)
 		ads = append(ads, currentAd)
 	})
 
 	return ads, nil
+}
+
+func Scraper(url string) ([]AdData, error) {
+
+	var allAds = make([]AdData, 0)
+
+	for i := 1; i < 10; i++ {
+		// the "o" parameter in the page indicates the number of the page
+		curads, err := scraperSinglePage(url + "&o=" + strconv.Itoa(i))
+		if err != nil {
+			return nil, err
+		}
+
+		// no more ads on the page : stop here.
+		if len(curads) == 0 {
+			break
+		}
+
+		// strange syntax ... see http://stackoverflow.com/a/16248257
+		allAds = append(allAds, curads...)
+	}
+
+	return allAds, nil
 }
