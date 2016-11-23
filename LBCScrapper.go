@@ -10,15 +10,15 @@ import (
 )
 
 type AdData struct {
-	id             int
-	title          string
-	dateStr        string
-	url            string
-	price          int
-	locationTown   string
-	locationRegion string
-	thumbSrc       string
-	rawDom         *goquery.Selection
+	Id             int
+	Title          string
+	DateStr        string
+	Url            string
+	Price          int
+	LocationTown   string
+	LocationRegion string
+	ThumbSrc       string
+	RawDom         *goquery.Selection
 }
 
 const NoId = -1
@@ -86,17 +86,18 @@ func parseAd(s *goquery.Selection) AdData {
 		locationRegion = strings.TrimSpace(splitedLocation[1])
 	}
 
-	return AdData{
-		id:             id,
-		title:          title,
-		dateStr:        dateStr,
-		url:            url,
-		price:          priceInt,
-		locationTown:   locationTown,
-		locationRegion: locationRegion,
-		thumbSrc:       thumbSrc,
-		rawDom:         s,
+	adData := AdData{
+		Id:             id,
+		Title:          title,
+		DateStr:        dateStr,
+		Url:            url,
+		Price:          priceInt,
+		LocationTown:   locationTown,
+		LocationRegion: locationRegion,
+		ThumbSrc:       thumbSrc,
+		RawDom:         s,
 	}
+	return adData
 }
 
 func scraperSinglePage(url string) ([]AdData, error) {
