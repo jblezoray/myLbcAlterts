@@ -7,11 +7,11 @@ import (
 	"strconv"
 )
 
-type EmailUser struct {
-	Username    string
-	Password    string
-	EmailServer string
-	Port        int
+type SMTPUser struct {
+	Username string
+	Password string
+	Server   string
+	Port     int
 }
 
 type smtpTemplateData struct {
@@ -23,7 +23,7 @@ type smtpTemplateData struct {
 
 const emailTemplateFileName string = "sendMail.tmpl"
 
-func SendAdsByMail(emailUser EmailUser, from string, to string, adData []AdData) error {
+func SendAdsByMail(smtpUser SMTPUser, from string, to string, adData []AdData) error {
 
 	// build document from template
 	context := &smtpTemplateData{
@@ -44,8 +44,8 @@ func SendAdsByMail(emailUser EmailUser, from string, to string, adData []AdData)
 
 	// send mail.
 	err = smtp.SendMail(
-		emailUser.EmailServer+":"+strconv.Itoa(emailUser.Port),
-		smtp.PlainAuth("", emailUser.Username, emailUser.Password, emailUser.EmailServer),
+		smtpUser.Server+":"+strconv.Itoa(smtpUser.Port),
+		smtp.PlainAuth("", smtpUser.Username, smtpUser.Password, smtpUser.Server),
 		from,
 		[]string{to},
 		doc.Bytes())

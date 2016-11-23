@@ -1,4 +1,9 @@
 {
-    "SearchTerms": "porsche%20924"
-
+    "SearchTerms": "porsche%20924",
+    "SMTPUser": {
+        "Username" : "xxx",
+        "Password" : "yyy",
+        "Server" : "my.smtp-server.com",
+        "Port" : 25
+    }
 }

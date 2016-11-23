@@ -7,6 +7,7 @@ import (
 
 type Configuration struct {
 	SearchTerms string
+	SMTPUser    SMTPUser
 }
 
 func ReadConfigFile(filename string) (Configuration, error) {
