@@ -29,7 +29,7 @@ func main() {
 	}
 
 	// retrieve data about previous launches
-	dbAdData, err := LoadOrCreate(config.SearchTerms)
+	dbAdData, err := LoadOrCreate(config)
 	if err != nil {
 		fmt.Print(err.Error())
 		return

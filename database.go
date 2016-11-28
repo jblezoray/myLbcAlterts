@@ -15,21 +15,21 @@ type DbAdData struct {
 	boltDB *bolt.DB
 }
 
-func LoadOrCreate(searchTerms string) (*DbAdData, error) {
+func LoadOrCreate(config Configuration) (*DbAdData, error) {
 
 	dbAdData := DbAdData{}
 	var err error
 
 	// open or create
 	options := bolt.Options{Timeout: openTimeout} // avoid indefinite wait
-	dbAdData.boltDB, err = bolt.Open(databaseFilename, 0600, &options)
+	dbAdData.boltDB, err = bolt.Open(config.DatabaseFilepath, 0600, &options)
 	if err != nil {
 		return nil, err
 	}
 
 	// create buckets if they don't exist.
 	err = dbAdData.boltDB.Update(func(tx *bolt.Tx) error {
-		_, err = tx.CreateBucketIfNotExists(bucketId(searchTerms))
+		_, err = tx.CreateBucketIfNotExists(bucketId(config.SearchTerms))
 		return err
 	})
 	return &dbAdData, err

@@ -1,5 +1,6 @@
 {
     "SearchTerms": "porsche%20924",
+    "databaseFilepath": "/path/to/database/file",
     "SMTPUser": {
         "Username" : "xxx",
         "Password" : "yyy",
