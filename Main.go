@@ -21,22 +21,24 @@ func main() {
 		return
 	}
 
-	// retrieve data about previous launches / read config
-	// TODO
-	// query := "porsche%20924"
+	// read configuration
 	config, err := ReadConfigFile(args[1])
-	// config, err := ReadConfigFile("sampleConf.json")
 	if err != nil {
 		fmt.Print(err.Error())
 		return
 	}
 
-	// build URL to scrap
+	// retrieve data about previous launches
+	dbAdData, err := LoadOrCreate(config.SearchTerms)
+	if err != nil {
+		fmt.Print(err.Error())
+		return
+	}
+
+	// build URL to scrap & scrap new data
 	// TODO build an URL builder.
 	url := "https://www.leboncoin.fr/voitures/offres/bretagne/occasions/?q=" + config.SearchTerms
-
-	// scrap new data
-	ads, err := Scraper(url)
+	ads, err := Scraper(url, *dbAdData, config.SearchTerms)
 	if err != nil {
 		fmt.Print(err.Error())
 		return

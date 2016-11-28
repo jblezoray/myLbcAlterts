@@ -18,7 +18,6 @@ type AdData struct {
 	LocationTown   string
 	LocationRegion string
 	ThumbSrc       string
-	RawDom         *goquery.Selection
 }
 
 const NoId = -1
@@ -95,7 +94,6 @@ func parseAd(s *goquery.Selection) AdData {
 		LocationTown:   locationTown,
 		LocationRegion: locationRegion,
 		ThumbSrc:       thumbSrc,
-		RawDom:         s,
 	}
 	return adData
 }
@@ -106,11 +104,10 @@ func scraperSinglePage(url string) ([]AdData, error) {
 		return nil, errors.New("cannot query the URL" + url)
 	}
 
-	fmt.Println("Scrapping ", url)
-
 	var ads = make([]AdData, 0)
 	selection := doc.Find("section.tabsContent li")
 	selection.Each(func(i int, sel *goquery.Selection) {
+		//debugPrintRawDom(sel)
 		currentAd := parseAd(sel)
 		ads = append(ads, currentAd)
 	})
@@ -118,7 +115,12 @@ func scraperSinglePage(url string) ([]AdData, error) {
 	return ads, nil
 }
 
-func Scraper(url string) ([]AdData, error) {
+func debugPrintRawDom(rawDom *goquery.Selection) {
+	var html, _ = rawDom.Html()
+	fmt.Printf("Raw dom source >>>>\n%s\n", html)
+}
+
+func Scraper(url string, dbAdData DbAdData, searchTerms string) ([]AdData, error) {
 
 	var allAds = make([]AdData, 0)
 
@@ -129,13 +131,28 @@ func Scraper(url string) ([]AdData, error) {
 			return nil, err
 		}
 
-		// no more ads on the page : stop here.
+		stopHere := false
 		if len(curads) == 0 {
-			break
+			stopHere = true
+		} else {
+			for _, ad := range curads {
+				adKnown, err := IsAdKnown(&dbAdData, searchTerms, ad)
+				if err != nil {
+					return nil, err
+				} else if adKnown {
+					stopHere = true
+					break
+				} else {
+					SaveAd(&dbAdData, searchTerms, ad)
+					allAds = append(allAds, ad)
+				}
+			}
 		}
 
-		// strange syntax ... see http://stackoverflow.com/a/16248257
-		allAds = append(allAds, curads...)
+		// no ad on the page OR at least one is known: don't scrap more page.
+		if stopHere {
+			break
+		}
 	}
 
 	return allAds, nil

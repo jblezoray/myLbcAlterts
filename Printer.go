@@ -7,11 +7,6 @@ func PrintLineSeparator() {
 	fmt.Printf("----------------------------------------------------------------------------\n")
 }
 
-func PrintRawDom(ad AdData) {
-	var html, _ = ad.RawDom.Html()
-	fmt.Printf("Raw dom source >>>>\n%s\n", html)
-}
-
 func PrintText(ad AdData) {
 	if ad.Id != NoId {
 		fmt.Printf("id       =  %d\n", ad.Id)
