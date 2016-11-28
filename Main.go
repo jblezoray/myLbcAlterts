@@ -54,7 +54,7 @@ func main() {
 		//PrintLineSeparator()
 	}
 
-	if len(ads) != 0 {
+	if len(ads) == 0 {
 		fmt.Println("No new Data")
 	} else {
 		// build & send a mail
