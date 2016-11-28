@@ -1,5 +1,5 @@
 {
-    "SearchTerms": "porsche%20924",
+    "SearchTerms": "voitures/offres/bretagne/occasions/?q=porsche%20924",
     "databaseFilepath": "/path/to/database/file",
     "SMTPUser": {
         "Username" : "xxx",

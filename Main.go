@@ -37,7 +37,7 @@ func main() {
 
 	// build URL to scrap & scrap new data
 	// TODO build an URL builder.
-	url := "https://www.leboncoin.fr/voitures/offres/bretagne/occasions/?q=" + config.SearchTerms
+	url := "https://www.leboncoin.fr/" + config.SearchTerms
 	ads, err := Scraper(url, *dbAdData, config.SearchTerms)
 	if err != nil {
 		fmt.Print(err.Error())
