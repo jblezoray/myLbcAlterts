@@ -56,7 +56,7 @@ func main() {
 
 	// build & send a mail
 	fmt.Println("Sending mail")
-	err = SendAdsByMail(config.SMTPUser, config.MailFrom, config.To, ads)
+	err = SendAdsByMail(config.SMTPUser, config.MailFrom, config.MailTo, ads)
 	if err != nil {
 		fmt.Print(err.Error())
 		return
