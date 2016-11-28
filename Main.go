@@ -54,12 +54,16 @@ func main() {
 		//PrintLineSeparator()
 	}
 
-	// build & send a mail
-	fmt.Println("Sending mail")
-	err = SendAdsByMail(config.SMTPUser, config.MailFrom, config.MailTo, ads)
-	if err != nil {
-		fmt.Print(err.Error())
-		return
+	if len(ads) != 0 {
+		fmt.Println("No new Data")
+	} else {
+		// build & send a mail
+		fmt.Println("Sending mail")
+		err = SendAdsByMail(config.SMTPUser, config.MailFrom, config.MailTo, ads)
+		if err != nil {
+			fmt.Print(err.Error())
+			return
+		}
 	}
 
 	fmt.Println("DONE")
