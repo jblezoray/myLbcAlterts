@@ -8,6 +8,8 @@ import (
 type Configuration struct {
 	SearchTerms string
 	SMTPUser    SMTPUser
+	MailFrom    string
+	MailTo      string
 }
 
 func ReadConfigFile(filename string) (Configuration, error) {

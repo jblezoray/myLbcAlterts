@@ -5,5 +5,7 @@
         "Password" : "yyy",
         "Server" : "my.smtp-server.com",
         "Port" : 25
-    }
+    },
+    "MailFrom" : "sendFrom@thisEmail.com",
+    "MailTo" : "to@thisEmail.com"
 }
