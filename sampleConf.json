@@ -1,5 +1,14 @@
 {
-    "SearchTerms": "voitures/offres/bretagne/occasions/?q=porsche%20924",
+    "Searches" : [
+        {
+            "Name":"Porsche 924", 
+            "Terms":"voitures/offres/bretagne/occasions/?q=porsche%20924"
+        },
+        {
+            "Name":"Pieces pour 924", 
+            "Terms":"equipement_auto/offres/bretagne/occasions/?q=924"
+        }
+    ],
     "databaseFilepath": "/path/to/database/file",
     "SMTPUser": {
         "Username" : "xxx",

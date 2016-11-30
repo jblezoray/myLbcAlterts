@@ -120,8 +120,9 @@ func debugPrintRawDom(rawDom *goquery.Selection) {
 	fmt.Printf("Raw dom source >>>>\n%s\n", html)
 }
 
-func Scraper(url string, dbAdData DbAdData, searchTerms string) ([]AdData, error) {
+func Scraper(dbAdData DbAdData, search Search) ([]AdData, error) {
 
+	var url = "https://www.leboncoin.fr/" + search.Terms
 	var allAds = make([]AdData, 0)
 
 	for i := 1; i < 10; i++ {
@@ -136,14 +137,14 @@ func Scraper(url string, dbAdData DbAdData, searchTerms string) ([]AdData, error
 			stopHere = true
 		} else {
 			for _, ad := range curads {
-				adKnown, err := IsAdKnown(&dbAdData, searchTerms, ad)
+				adKnown, err := IsAdKnown(&dbAdData, search, ad)
 				if err != nil {
 					return nil, err
 				} else if adKnown {
 					stopHere = true
 					break
 				} else {
-					SaveAd(&dbAdData, searchTerms, ad)
+					SaveAd(&dbAdData, search, ad)
 					allAds = append(allAds, ad)
 				}
 			}

@@ -28,17 +28,19 @@ func LoadOrCreate(config Configuration) (*DbAdData, error) {
 	}
 
 	// create buckets if they don't exist.
-	err = dbAdData.boltDB.Update(func(tx *bolt.Tx) error {
-		_, err = tx.CreateBucketIfNotExists(bucketId(config.SearchTerms))
-		return err
-	})
+	for _, search := range config.Searches {
+		err = dbAdData.boltDB.Update(func(tx *bolt.Tx) error {
+			_, err = tx.CreateBucketIfNotExists(bucketId(search.Name))
+			return err
+		})
+	}
 	return &dbAdData, err
 }
 
-func IsAdKnown(dbAdData *DbAdData, searchTerms string, ad AdData) (bool, error) {
+func IsAdKnown(dbAdData *DbAdData, search Search, ad AdData) (bool, error) {
 	var known = false
 	err := dbAdData.boltDB.View(func(tx *bolt.Tx) error {
-		b := tx.Bucket(bucketId(searchTerms))
+		b := tx.Bucket(bucketId(search.Name))
 		key := adKey(ad)
 		v := b.Get(key)
 		known = (v != nil)
@@ -47,9 +49,9 @@ func IsAdKnown(dbAdData *DbAdData, searchTerms string, ad AdData) (bool, error) 
 	return known, err
 }
 
-func SaveAd(dbAdData *DbAdData, searchTerms string, ad AdData) error {
+func SaveAd(dbAdData *DbAdData, search Search, ad AdData) error {
 	err := dbAdData.boltDB.Update(func(tx *bolt.Tx) error {
-		b := tx.Bucket(bucketId(searchTerms))
+		b := tx.Bucket(bucketId(search.Name))
 		adBytes, err := adMarshal(ad)
 		if err != nil {
 			return err

@@ -35,35 +35,31 @@ func main() {
 		return
 	}
 
-	// build URL to scrap & scrap new data
-	// TODO build an URL builder.
-	url := "https://www.leboncoin.fr/" + config.SearchTerms
-	ads, err := Scraper(url, *dbAdData, config.SearchTerms)
-	if err != nil {
-		fmt.Print(err.Error())
-		return
-	}
-
+	// Scrap new data (eventually print it)
 	// it could be possible to compute a distance to a point, on the basis of this webservice :
 	// $ curl "http://api-adresse.data.gouv.fr/search/?type=city&q=Carcassonne" |jq
-
-	// print data
-	for _, ad := range ads {
-		PrintTextAbridged(ad)
-		//PrintText(ad)
-		//PrintLineSeparator()
-	}
-
-	if len(ads) == 0 {
-		fmt.Println("No new Data")
-	} else {
-		// build & send a mail
-		fmt.Println("Sending mail")
-		err = SendAdsByMail(config.SMTPUser, config.MailFrom, config.MailTo, ads)
+	var adsBySearch = make(map[Search][]AdData)
+	for _, search := range config.Searches {
+		fmt.Printf("Scraping '%s'\n", search.Name)
+		ads, err := Scraper(*dbAdData, search)
 		if err != nil {
 			fmt.Print(err.Error())
 			return
 		}
+		for _, ad := range ads {
+			PrintTextAbridged(ad)
+			//PrintText(ad)
+			//PrintLineSeparator()
+		}
+		adsBySearch[search] = ads
+	}
+
+	// build & send a mail
+	fmt.Println("Sending mail")
+	err = SendAdsByMail(config, adsBySearch)
+	if err != nil {
+		fmt.Print(err.Error())
+		return
 	}
 
 	fmt.Println("DONE")
