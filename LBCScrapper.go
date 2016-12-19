@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/PuerkitoBio/goquery"
 )
@@ -120,10 +121,12 @@ func debugPrintRawDom(rawDom *goquery.Selection) {
 	fmt.Printf("Raw dom source >>>>\n%s\n", html)
 }
 
-func Scraper(dbAdData DbAdData, search Search) ([]AdData, error) {
+func Scraper(dbAdData DbAdData, search Search,
+	TimeBetweenRequestsInSeconds int) ([]AdData, error) {
 
 	var url = "https://www.leboncoin.fr/" + search.Terms
 	var allAds = make([]AdData, 0)
+	var timeBetweenRequests = time.Duration(TimeBetweenRequestsInSeconds) * time.Second
 
 	for i := 1; i < 10; i++ {
 		// the "o" parameter in the page indicates the number of the page
@@ -149,6 +152,9 @@ func Scraper(dbAdData DbAdData, search Search) ([]AdData, error) {
 				}
 			}
 		}
+
+		// call regulation
+		time.Sleep(timeBetweenRequests)
 
 		// no ad on the page OR at least one is known: don't scrap more page.
 		if stopHere {

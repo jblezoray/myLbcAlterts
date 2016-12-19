@@ -7,11 +7,12 @@ import (
 )
 
 type Configuration struct {
-	Searches         []Search
-	DatabaseFilepath string
-	SMTPUser         SMTPUser
-	MailFrom         string
-	MailTo           string
+	Searches                     []Search
+	DatabaseFilepath             string
+	SMTPUser                     SMTPUser
+	MailFrom                     string
+	MailTo                       string
+	TimeBetweenRequestsInSeconds int
 }
 
 type Search struct {

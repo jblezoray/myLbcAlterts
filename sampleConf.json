@@ -17,5 +17,6 @@
         "Port" : 25
     },
     "MailFrom" : "sendFrom@thisEmail.com",
-    "MailTo" : "to@thisEmail.com"
+    "MailTo" : "to@thisEmail.com",
+    "TimeBetweenRequestsInSeconds" : 20
 }
