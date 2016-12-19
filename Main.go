@@ -38,20 +38,10 @@ func main() {
 	// Scrap new data (eventually print it)
 	// it could be possible to compute a distance to a point, on the basis of this webservice :
 	// $ curl "http://api-adresse.data.gouv.fr/search/?type=city&q=Carcassonne" |jq
-	var adsBySearch = make(map[Search][]AdData)
-	for _, search := range config.Searches {
-		fmt.Printf("Scraping '%s'\n", search.Name)
-		ads, err := Scraper(*dbAdData, search)
-		if err != nil {
-			fmt.Print(err.Error())
-			return
-		}
-		for _, ad := range ads {
-			PrintTextAbridged(ad)
-			//PrintText(ad)
-			//PrintLineSeparator()
-		}
-		adsBySearch[search] = ads
+	adsBySearch, err := MultiScraper(config, *dbAdData)
+	if err != nil {
+		fmt.Print(err.Error())
+		return
 	}
 
 	// build & send a mail

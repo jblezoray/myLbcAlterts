@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
-	"time"
 
 	"github.com/PuerkitoBio/goquery"
 )
@@ -14,6 +13,7 @@ type AdData struct {
 	Id             int
 	Title          string
 	DateStr        string
+	UrgentFlag     bool
 	Url            string
 	Price          int
 	LocationTown   string
@@ -34,6 +34,8 @@ func parseAd(s *goquery.Selection) AdData {
 
 	// parse date
 	var dateStr = s.Find("aside.item_absolute p.item_supp").Text()
+	var urgentFlag = strings.Count(dateStr, "Urgent") == 1
+	dateStr = strings.Replace(dateStr, "Urgent", "", -1)
 	dateStr = strings.TrimSpace(dateStr)
 
 	// parse url
@@ -90,6 +92,7 @@ func parseAd(s *goquery.Selection) AdData {
 		Id:             id,
 		Title:          title,
 		DateStr:        dateStr,
+		UrgentFlag:     urgentFlag,
 		Url:            url,
 		Price:          priceInt,
 		LocationTown:   locationTown,
@@ -121,46 +124,31 @@ func debugPrintRawDom(rawDom *goquery.Selection) {
 	fmt.Printf("Raw dom source >>>>\n%s\n", html)
 }
 
-func Scraper(dbAdData DbAdData, search Search,
-	TimeBetweenRequestsInSeconds int) ([]AdData, error) {
+func Scraper(
+	search Search,
+	callbacks ...func(ads []AdData, search Search) error) error {
 
 	var url = "https://www.leboncoin.fr/" + search.Terms
-	var allAds = make([]AdData, 0)
-	var timeBetweenRequests = time.Duration(TimeBetweenRequestsInSeconds) * time.Second
 
 	for i := 1; i < 10; i++ {
 		// the "o" parameter in the page indicates the number of the page
 		curads, err := scraperSinglePage(url + "&o=" + strconv.Itoa(i))
 		if err != nil {
-			return nil, err
+			return err
 		}
 
-		stopHere := false
-		if len(curads) == 0 {
-			stopHere = true
-		} else {
-			for _, ad := range curads {
-				adKnown, err := IsAdKnown(&dbAdData, search, ad)
-				if err != nil {
-					return nil, err
-				} else if adKnown {
-					stopHere = true
-					break
-				} else {
-					SaveAd(&dbAdData, search, ad)
-					allAds = append(allAds, ad)
-				}
+		for _, callback := range callbacks {
+			err = callback(curads, search)
+			if err != nil {
+				return err
 			}
 		}
 
-		// call regulation
-		time.Sleep(timeBetweenRequests)
-
-		// no ad on the page OR at least one is known: don't scrap more page.
-		if stopHere {
+		// no ad on the page
+		if len(curads) == 0 {
 			break
 		}
 	}
 
-	return allAds, nil
+	return nil
 }

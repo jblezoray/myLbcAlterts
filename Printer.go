@@ -33,6 +33,11 @@ func PrintTextAbridged(ad AdData) {
 		priceStr = strconv.Itoa(ad.Price) + " €"
 	}
 
-	fmt.Printf("| %10.10d | %-35.35s | %15.15s | %10.10s | %20.20s | %25.25s |\n",
-		ad.Id, ad.Title, ad.DateStr, priceStr, ad.LocationRegion, ad.LocationTown)
+	var urgent = ""
+	if ad.UrgentFlag {
+		urgent = "X"
+	}
+
+	fmt.Printf("| %10.10d | %-35.35s | %15.15s | %10.10s | %1s | %20.20s | %25.25s |\n",
+		ad.Id, ad.Title, ad.DateStr, priceStr, urgent, ad.LocationRegion, ad.LocationTown)
 }
