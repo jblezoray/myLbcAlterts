@@ -2,23 +2,25 @@ package main
 
 import (
 	"errors"
-	"fmt"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/PuerkitoBio/goquery"
 )
 
 type AdData struct {
-	Id             int
-	Title          string
-	DateStr        string
-	UrgentFlag     bool
-	Url            string
-	Price          int
-	LocationTown   string
-	LocationRegion string
-	ThumbSrc       string
+	Id                     int
+	Title                  string
+	DateStr                string
+	UrgentFlag             bool
+	Url                    string
+	Price                  int
+	LocationTown           string
+	LocationRegion         string
+	ThumbSrc               string
+	MetaData_DateSeenFirst time.Time
+	MetaData_DateSeenLast  time.Time
 }
 
 const NoId = -1
@@ -119,10 +121,10 @@ func scraperSinglePage(url string) ([]AdData, error) {
 	return ads, nil
 }
 
-func debugPrintRawDom(rawDom *goquery.Selection) {
-	var html, _ = rawDom.Html()
-	fmt.Printf("Raw dom source >>>>\n%s\n", html)
-}
+// func debugPrintRawDom(rawDom *goquery.Selection) {
+// 	var html, _ = rawDom.Html()
+// 	fmt.Printf("Raw dom source >>>>\n%s\n", html)
+// }
 
 type InterfaceCallbackAds interface {
 	callbackNewSearch(search *Search) error

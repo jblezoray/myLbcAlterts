@@ -8,7 +8,6 @@ import (
 	"github.com/boltdb/bolt"
 )
 
-const databaseFilename string = "database.db"
 const openTimeout time.Duration = 1 * time.Second
 
 type DbAdData struct {
@@ -41,12 +40,25 @@ func (dbAdData *DbAdData) IsAdKnown(search Search, ad AdData) (bool, error) {
 	var known = false
 	err := dbAdData.boltDB.View(func(tx *bolt.Tx) error {
 		b := tx.Bucket(dbAdData.bucketID(search.Name))
-		key := dbAdData.adKey(ad)
+		key := dbAdData.adKey(ad.Id)
 		v := b.Get(key)
 		known = (v != nil)
 		return nil
 	})
 	return known, err
+}
+
+func (dbAdData *DbAdData) GetAd(search Search, adID int) (AdData, error) {
+	var adData AdData
+	err := dbAdData.boltDB.View(func(tx *bolt.Tx) error {
+		b := tx.Bucket(dbAdData.bucketID(search.Name))
+		key := dbAdData.adKey(adID)
+		adDataRaw := b.Get(key)
+		var err2 error
+		adData, err2 = dbAdData.adUnmarshal(adDataRaw)
+		return err2
+	})
+	return adData, err
 }
 
 func (dbAdData *DbAdData) SaveAd(search Search, ad AdData) error {
@@ -56,7 +68,7 @@ func (dbAdData *DbAdData) SaveAd(search Search, ad AdData) error {
 		if err != nil {
 			return err
 		}
-		err = b.Put(dbAdData.adKey(ad), adBytes)
+		err = b.Put(dbAdData.adKey(ad.Id), adBytes)
 		return err
 	})
 	return err
@@ -70,8 +82,8 @@ func (dbAdData DbAdData) bucketID(searchTerms string) []byte {
 	return []byte(searchTerms)
 }
 
-func (dbAdData DbAdData) adKey(ad AdData) []byte {
-	return []byte(strconv.Itoa(ad.Id))
+func (dbAdData DbAdData) adKey(adID int) []byte {
+	return []byte(strconv.Itoa(adID))
 }
 
 func (dbAdData DbAdData) adMarshal(ad AdData) ([]byte, error) {
