@@ -124,29 +124,44 @@ func debugPrintRawDom(rawDom *goquery.Selection) {
 	fmt.Printf("Raw dom source >>>>\n%s\n", html)
 }
 
+type InterfaceCallbackAds interface {
+	callbackNewSearch(search *Search) error
+	callbackAds(curads []AdData) error
+}
+
 func Scraper(
-	search Search,
-	callbacks ...func(ads []AdData, search Search) error) error {
+	searches []Search,
+	callbacks ...InterfaceCallbackAds) error {
 
-	var url = "https://www.leboncoin.fr/" + search.Terms
-
-	for i := 1; i < 10; i++ {
-		// the "o" parameter in the page indicates the number of the page
-		curads, err := scraperSinglePage(url + "&o=" + strconv.Itoa(i))
-		if err != nil {
-			return err
-		}
+	for _, search := range searches {
 
 		for _, callback := range callbacks {
-			err = callback(curads, search)
+			err := callback.callbackNewSearch(&search)
 			if err != nil {
 				return err
 			}
 		}
 
-		// no ad on the page
-		if len(curads) == 0 {
-			break
+		var url = "https://www.leboncoin.fr/" + search.Terms
+
+		for i := 1; i < 10; i++ {
+			// the "o" parameter in the page indicates the number of the page
+			curads, err := scraperSinglePage(url + "&o=" + strconv.Itoa(i))
+			if err != nil {
+				return err
+			}
+
+			for _, callback := range callbacks {
+				err = callback.callbackAds(curads)
+				if err != nil {
+					return err
+				}
+			}
+
+			// no ad on the page
+			if len(curads) == 0 {
+				break
+			}
 		}
 	}
 

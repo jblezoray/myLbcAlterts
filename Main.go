@@ -35,19 +35,23 @@ func main() {
 		return
 	}
 
-	// Scrap new data (eventually print it)
-	// it could be possible to compute a distance to a point, on the basis of this webservice :
+	// prepare callbacks
+	collector := CallbackCollectorFactory(*dbAdData)
+	timer := CallbackTimerFactory(config.TimeBetweenRequestsInSeconds)
+	printer := CallbackPrinterFactory()
+	// it could be possible to have a callback that compute a distance to a
+	// point, and enrichies the AdData. on the basis of this webservice :
 	// $ curl "http://api-adresse.data.gouv.fr/search/?type=city&q=Carcassonne" |jq
-	adsBySearch, err := MultiScraper(config, *dbAdData)
-	if err != nil {
+
+	// Scrap new data
+	if err := Scraper(config.Searches, collector, timer, printer); err != nil {
 		fmt.Print(err.Error())
 		return
 	}
 
 	// build & send a mail
 	fmt.Println("Sending mail")
-	err = SendAdsByMail(config, adsBySearch)
-	if err != nil {
+	if err := SendAdsByMail(config, collector.adsBySearch); err != nil {
 		fmt.Print(err.Error())
 		return
 	}

@@ -6,11 +6,17 @@ type CallbackTimer struct {
 	timeBetweenRequests time.Duration
 }
 
-func (ct CallbackTimer) init(timeBetweenRequestsInSeconds int) {
+func CallbackTimerFactory(timeBetweenRequestsInSeconds int) *CallbackTimer {
+	ct := &CallbackTimer{}
 	ct.timeBetweenRequests = time.Duration(timeBetweenRequestsInSeconds) * time.Second
+	return ct
 }
 
-func (ct CallbackTimer) callbackSlowMeDown(curads []AdData, search Search) error {
+func (ct *CallbackTimer) callbackNewSearch(search *Search) error {
+	return nil // noop
+}
+
+func (ct *CallbackTimer) callbackAds(curads []AdData) error {
 	time.Sleep(ct.timeBetweenRequests)
 	return nil
 }

@@ -1,13 +1,38 @@
 package main
 
-import "fmt"
-import "strconv"
+import (
+	"fmt"
+	"strconv"
+)
 
-func PrintLineSeparator() {
+type CallbackPrinter struct {
+	// noop
+}
+
+func CallbackPrinterFactory() *CallbackPrinter {
+	return &CallbackPrinter{}
+}
+
+func (cp *CallbackPrinter) callbackNewSearch(search *Search) error {
+	printLineSeparator()
+	fmt.Printf("Scraping '%s'\n", search.Name)
+	return nil
+}
+
+func (cp *CallbackPrinter) callbackAds(curads []AdData) error {
+	for _, ad := range curads {
+		printTextAbridged(ad)
+		//printText(ad)
+		//printLineSeparator()
+	}
+	return nil
+}
+
+func printLineSeparator() {
 	fmt.Printf("----------------------------------------------------------------------------\n")
 }
 
-func PrintText(ad AdData) {
+func printText(ad AdData) {
 	if ad.Id != NoId {
 		fmt.Printf("id       =  %d\n", ad.Id)
 	} else {
@@ -27,7 +52,7 @@ func PrintText(ad AdData) {
 	}
 }
 
-func PrintTextAbridged(ad AdData) {
+func printTextAbridged(ad AdData) {
 	var priceStr = ""
 	if ad.Price != NoPrice {
 		priceStr = strconv.Itoa(ad.Price) + " €"
