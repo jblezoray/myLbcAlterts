@@ -41,7 +41,7 @@ func main() {
 	printer := CallbackPrinterFactory()
 	// it could be possible to have a callback that compute a distance to a
 	// point, and enrichies the AdData. on the basis of this webservice :
-	// $ curl "http://api-adresse.data.gouv.fr/search/?type=city&q=Carcassonne" |jq
+	// $ curl -s "http://api-adresse.data.gouv.fr/search/?type=city&q=Carcassonne" |jq
 
 	// Scrap new data
 	if err := Scraper(config.Searches, collector, timer, printer); err != nil {
@@ -51,7 +51,7 @@ func main() {
 
 	// build & send a mail
 	fmt.Println("Sending mail")
-	if err := SendAdsByMail(config, collector.adsBySearch); err != nil {
+	if err := SendAdsByMail(config, collector.newAdsBySearch); err != nil {
 		fmt.Print(err.Error())
 		return
 	}
