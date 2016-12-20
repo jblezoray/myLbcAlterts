@@ -30,18 +30,18 @@ func LoadOrCreate(config Configuration) (*DbAdData, error) {
 	// create buckets if they don't exist.
 	for _, search := range config.Searches {
 		err = dbAdData.boltDB.Update(func(tx *bolt.Tx) error {
-			_, err = tx.CreateBucketIfNotExists(bucketId(search.Name))
+			_, err = tx.CreateBucketIfNotExists(dbAdData.bucketID(search.Name))
 			return err
 		})
 	}
 	return &dbAdData, err
 }
 
-func IsAdKnown(dbAdData *DbAdData, search Search, ad AdData) (bool, error) {
+func (dbAdData *DbAdData) IsAdKnown(search Search, ad AdData) (bool, error) {
 	var known = false
 	err := dbAdData.boltDB.View(func(tx *bolt.Tx) error {
-		b := tx.Bucket(bucketId(search.Name))
-		key := adKey(ad)
+		b := tx.Bucket(dbAdData.bucketID(search.Name))
+		key := dbAdData.adKey(ad)
 		v := b.Get(key)
 		known = (v != nil)
 		return nil
@@ -49,35 +49,35 @@ func IsAdKnown(dbAdData *DbAdData, search Search, ad AdData) (bool, error) {
 	return known, err
 }
 
-func SaveAd(dbAdData *DbAdData, search Search, ad AdData) error {
+func (dbAdData *DbAdData) SaveAd(search Search, ad AdData) error {
 	err := dbAdData.boltDB.Update(func(tx *bolt.Tx) error {
-		b := tx.Bucket(bucketId(search.Name))
-		adBytes, err := adMarshal(ad)
+		b := tx.Bucket(dbAdData.bucketID(search.Name))
+		adBytes, err := dbAdData.adMarshal(ad)
 		if err != nil {
 			return err
 		}
-		err = b.Put(adKey(ad), adBytes)
+		err = b.Put(dbAdData.adKey(ad), adBytes)
 		return err
 	})
 	return err
 }
 
-func SaveAndClose(dbAdData *DbAdData) error {
+func (dbAdData *DbAdData) SaveAndClose() error {
 	return dbAdData.boltDB.Close()
 }
 
-func bucketId(searchTerms string) []byte {
+func (dbAdData DbAdData) bucketID(searchTerms string) []byte {
 	return []byte(searchTerms)
 }
 
-func adKey(ad AdData) []byte {
+func (dbAdData DbAdData) adKey(ad AdData) []byte {
 	return []byte(strconv.Itoa(ad.Id))
 }
 
-func adMarshal(ad AdData) ([]byte, error) {
+func (dbAdData DbAdData) adMarshal(ad AdData) ([]byte, error) {
 	return json.Marshal(ad)
 }
-func adUnmarshal(adBytes []byte) (AdData, error) {
+func (dbAdData DbAdData) adUnmarshal(adBytes []byte) (AdData, error) {
 	var ad AdData
 	err := json.Unmarshal(adBytes, &ad)
 	return ad, err

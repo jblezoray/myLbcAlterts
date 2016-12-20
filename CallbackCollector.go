@@ -24,7 +24,7 @@ func (ac *CallbackCollector) callbackAds(curads []AdData) error {
 	}
 
 	for _, ad := range curads {
-		SaveAd(ac.dbAdData, *ac.curSearch, ad)
+		ac.dbAdData.SaveAd(*ac.curSearch, ad)
 		ac.newAdsBySearch[*ac.curSearch] = append(ac.newAdsBySearch[*ac.curSearch], ad)
 	}
 
