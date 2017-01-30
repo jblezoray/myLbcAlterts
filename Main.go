@@ -3,26 +3,20 @@ package main
 import "os"
 import "fmt"
 
-func printUsage(progName string) {
-	fmt.Println(progName + " is a scraper of a well knwon classified ads website.")
-	fmt.Println()
-	fmt.Println("Usage:")
-	fmt.Println()
-	fmt.Println("    " + progName + " configFile.json")
-	fmt.Println()
-}
-
 func main() {
 
 	// parse arguments
 	args := os.Args
-	if len(args) != 2 {
+	analyzeMode := len(args) == 3 && args[2] == "--analyze"
+	updateDbMode := len(args) == 2
+	if !analyzeMode && !updateDbMode {
 		printUsage(args[0])
 		return
 	}
+	configFilePath := args[1]
 
 	// read configuration
-	config, err := ReadConfigFile(args[1])
+	config, err := ReadConfigFile(configFilePath)
 	if err != nil {
 		fmt.Print(err.Error())
 		return
@@ -34,6 +28,38 @@ func main() {
 		fmt.Print(err.Error())
 		return
 	}
+
+	if analyzeMode {
+		analyzeDb(config, dbAdData)
+	} else if updateDbMode {
+		updateDb(config, dbAdData)
+	}
+
+	fmt.Println("DONE")
+}
+
+func printUsage(progName string) {
+	fmt.Println(progName + " is a scraper of a well knwon classified ads website.")
+	fmt.Println()
+	fmt.Println("Usage:")
+	fmt.Println()
+	fmt.Println("    " + progName + " configFile.json [--analyze]")
+	fmt.Println()
+}
+
+func analyzeDb(config Configuration, dbAdData *DbAdData) {
+	fmt.Println("analyzing Database")
+	for _, search := range config.Searches {
+		fmt.Println("Search : ", search.Name)
+		adDatas, _ := dbAdData.GetAllAds(search)
+		for _, adData := range adDatas {
+			fmt.Println("printing", adData)
+			printText(adData)
+		}
+	}
+}
+
+func updateDb(config Configuration, dbAdData *DbAdData) {
 
 	// prepare callbacks
 	collector := CallbackCollectorFactory(*dbAdData)
@@ -55,6 +81,4 @@ func main() {
 		fmt.Print(err.Error())
 		return
 	}
-
-	fmt.Println("DONE")
 }

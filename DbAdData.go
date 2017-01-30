@@ -48,6 +48,11 @@ func (dbAdData *DbAdData) IsAdKnown(search Search, ad AdData) (bool, error) {
 	return known, err
 }
 
+func (dbAdData *DbAdData) GetAllAds(search Search) ([]AdData, error) {
+
+	return nil, nil
+}
+
 func (dbAdData *DbAdData) GetAd(search Search, adID int) (AdData, error) {
 	var adData AdData
 	err := dbAdData.boltDB.View(func(tx *bolt.Tx) error {
