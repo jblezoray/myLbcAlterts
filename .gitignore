@@ -26,8 +26,8 @@ _testmain.go
 .DS_Store
 lbcAlerts
 myLbcAlterts
-MyConf.json
+MyConf*
 database.db*
-MyConf.test.json
+myLbcAlterts.db
 
 .vscode/
