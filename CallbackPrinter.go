@@ -33,28 +33,28 @@ func printLineSeparator() {
 }
 
 func printText(ad AdData) {
-	if ad.Id != NoId {
+	if ad.Id != AdDataNoId {
 		fmt.Printf("id       =  %d\n", ad.Id)
 	} else {
 		fmt.Printf("id       =  ?\n")
 	}
 	fmt.Printf("titre    =  %s\n", ad.Title)
 	fmt.Printf("date     =  %s\n", ad.DateStr)
-	if ad.Price != NoPrice {
+	if ad.Price != AdDataNoPrice {
 		fmt.Printf("price    =  %d €\n", ad.Price)
 	} else {
 		fmt.Printf("price    =  ?\n")
 	}
 	fmt.Printf("location =  %s / %s\n", ad.LocationTown, ad.LocationRegion)
 	fmt.Printf("thumb    =  %s\n", ad.ThumbSrc)
-	if ad.Url != NoURL {
+	if ad.Url != AdDataNoURL {
 		fmt.Printf("url      =  %s\n", ad.Url)
 	}
 }
 
 func printTextAbridged(ad AdData) {
 	var priceStr = ""
-	if ad.Price != NoPrice {
+	if ad.Price != AdDataNoPrice {
 		priceStr = strconv.Itoa(ad.Price) + " €"
 	}
 

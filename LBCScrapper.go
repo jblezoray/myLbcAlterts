@@ -4,29 +4,9 @@ import (
 	"errors"
 	"strconv"
 	"strings"
-	"time"
 
 	"github.com/PuerkitoBio/goquery"
 )
-
-type AdData struct {
-	Id                     int
-	Title                  string
-	DateStr                string
-	UrgentFlag             bool
-	Url                    string
-	Price                  int
-	LocationTown           string
-	LocationRegion         string
-	ThumbSrc               string
-	MetaData_DateSeenFirst time.Time
-	MetaData_DateSeenLast  time.Time
-}
-
-const NoId = -1
-const NoPrice = -1
-const NoURL = "noUrl"
-const DefaultThumb = "http://static.leboncoin.fr/img/no-picture.png"
 
 func parseAd(s *goquery.Selection) AdData {
 
@@ -43,26 +23,26 @@ func parseAd(s *goquery.Selection) AdData {
 	// parse url
 	url, exists := s.Find("a.list_item").Attr("href")
 	if !exists {
-		url = NoURL
+		url = AdDataNoURL
 	} else {
 		url = "http:" + url
 	}
 
 	// parse id
-	var id = NoId
+	var id = AdDataNoId
 	idStr, exists := s.Find("div.saveAd").Attr("data-savead-id")
 	if exists {
 		var err error
 		id, err = strconv.Atoi(idStr)
 		if err != nil {
-			id = NoId
+			id = AdDataNoId
 		}
 	}
 
 	// parse thumbSrc
 	thumbSrc, exists := s.Find("span.lazyload").Attr("data-imgsrc")
 	if !exists {
-		thumbSrc = DefaultThumb
+		thumbSrc = AdDataDefaultThumb
 	} else {
 		thumbSrc = "http:" + thumbSrc
 	}
@@ -74,7 +54,7 @@ func parseAd(s *goquery.Selection) AdData {
 	priceStr = strings.Replace(priceStr, " ", "", -1)
 	priceInt, err := strconv.Atoi(priceStr)
 	if err != nil {
-		priceInt = NoPrice
+		priceInt = AdDataNoPrice
 	}
 
 	// parse category
