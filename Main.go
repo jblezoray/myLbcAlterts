@@ -23,12 +23,13 @@ func main() {
 	}
 
 	// retrieve data about previous launches
-	dbAdData, err := LoadOrCreate(config)
+	dbAdData, err := LoadOrCreate(config.DatabaseFilepath, config.Searches)
 	if err != nil {
 		fmt.Print(err.Error())
 		return
 	}
 
+	// run in the good mode.
 	if analyzeMode {
 		analyzeDb(config, dbAdData)
 	} else if updateDbMode {
@@ -61,15 +62,13 @@ func analyzeDb(config Configuration, dbAdData *DbAdData) {
 
 func updateDb(config Configuration, dbAdData *DbAdData) {
 
-	// prepare callbacks
+	// Scrap new data
 	collector := CallbackCollectorFactory(*dbAdData)
 	timer := CallbackTimerFactory(config.TimeBetweenRequestsInSeconds)
 	printer := CallbackPrinterFactory()
 	// it could be possible to have a callback that compute a distance to a
 	// point, and enrichies the AdData. on the basis of this webservice :
 	// $ curl -s "http://api-adresse.data.gouv.fr/search/?type=city&q=Carcassonne" |jq
-
-	// Scrap new data
 	if err := Scraper(config.Searches, collector, timer, printer); err != nil {
 		fmt.Print(err.Error())
 		return
