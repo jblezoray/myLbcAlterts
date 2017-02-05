@@ -53,10 +53,11 @@ func analyzeDb(config Configuration, dbAdData *DbAdData) {
 	for _, search := range config.Searches {
 		fmt.Println("Search : ", search.Name)
 		adDatas, _ := dbAdData.GetAllAds(search)
+		printTextAbridgedHeader()
 		for _, adData := range adDatas {
-			fmt.Println("printing", adData)
-			printText(adData)
+			printTextAbridged(adData)
 		}
+		printTextAbridgedFooter()
 	}
 }
 

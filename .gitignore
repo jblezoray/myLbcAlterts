@@ -28,6 +28,6 @@ lbcAlerts
 myLbcAlterts
 MyConf*
 database.db*
-myLbcAlterts.db
+myLbcAlterts.db*
 
 .vscode/
