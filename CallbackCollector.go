@@ -37,7 +37,8 @@ func (ac *CallbackCollector) callbackAds(curads []AdData) error {
 			if err != nil {
 				return err
 			}
-			adPersisted.MetaData_DateSeenLast = time.Now()
+			ad.MergeWithAd(adPersisted)
+			ad.MetaData_DateSeenLast = time.Now()
 			ac.dbAdData.SaveAd(*ac.curSearch, ad)
 
 		} else {
