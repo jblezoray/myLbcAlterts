@@ -3,8 +3,15 @@ package main
 import "os"
 import "fmt"
 
-func main() {
+// Those values are initialized by a LD Flag
+var (
+	// Version contains the current git tag
+	Version string
+	// Build is the build date
+	Build string
+)
 
+func main() {
 	// parse arguments
 	args := os.Args
 	analyzeMode := len(args) == 3 && args[2] == "--analyze"
@@ -46,6 +53,9 @@ func printUsage(progName string) {
 	fmt.Println()
 	fmt.Println("    " + progName + " configFile.json [--analyze]")
 	fmt.Println()
+	fmt.Println("Version : " + Version)
+	fmt.Println("Build   : " + Build)
+	fmt.Println()
 }
 
 func analyzeDb(config Configuration, dbAdData *DbAdData) {
@@ -54,6 +64,7 @@ func analyzeDb(config Configuration, dbAdData *DbAdData) {
 		fmt.Println("Search : ", search.Name)
 		adDatas, _ := dbAdData.GetAllAds(search)
 		printTextAbridgedHeader()
+		// TODO order this by Ad Date !
 		for _, adData := range adDatas {
 			printTextAbridged(adData)
 		}
