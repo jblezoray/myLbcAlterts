@@ -8,7 +8,7 @@ build:
 	go build ${LDFLAGS} -o ${BINARY}
 
 test:
-	go test
+	go test -v
 
 install: test
 	go install ${LDFLAGS_f1}
