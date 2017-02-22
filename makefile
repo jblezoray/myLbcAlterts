@@ -7,7 +7,7 @@ LDFLAGS=-ldflags "-w -s -X main.Version=${VERSION} -X main.Build=${BUILD}"
 build:
 	go build ${LDFLAGS} -o ${BINARY}
 
-test:
+test: build
 	go test -v
 
 testrun: clean build test 
@@ -15,7 +15,7 @@ testrun: clean build test
 	./${BINARY} MyConf_v0.3.json --analyze
 
 install: test
-	go install ${LDFLAGS_f1}
+	go install ${LDFLAGS}
 
 clean:
 	if [ -f ${BINARY} ] ; then rm ${BINARY} ; fi
