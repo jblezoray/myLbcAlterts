@@ -2,7 +2,6 @@ package main
 
 import "os"
 import "fmt"
-import "sort"
 
 // Those values are initialized by a LD Flag
 var (
@@ -67,12 +66,7 @@ func analyzeDb(config Configuration, dbAdData *DbAdData) {
 	for _, search := range config.Searches {
 		fmt.Println("Search : ", search.Name)
 		adDatas, _ := dbAdData.GetAllAds(search)
-		sort.Sort(AdDataSortByDate(adDatas))
-		printTextAbridgedHeader()
-		for _, adData := range adDatas {
-			printTextAbridged(adData)
-		}
-		printTextAbridgedFooter()
+		Analyze(adDatas)
 	}
 }
 
