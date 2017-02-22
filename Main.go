@@ -2,6 +2,7 @@ package main
 
 import "os"
 import "fmt"
+import "sort"
 
 // Those values are initialized by a LD Flag
 var (
@@ -15,8 +16,9 @@ func main() {
 	// parse arguments
 	args := os.Args
 	analyzeMode := len(args) == 3 && args[2] == "--analyze"
+	migrateDbMode := len(args) == 3 && args[2] == "--migratedb"
 	updateDbMode := len(args) == 2
-	if !analyzeMode && !updateDbMode {
+	if !analyzeMode && !updateDbMode && !migrateDbMode {
 		printUsage(args[0])
 		return
 	}
@@ -39,6 +41,8 @@ func main() {
 	// run in the good mode.
 	if analyzeMode {
 		analyzeDb(config, dbAdData)
+	} else if migrateDbMode {
+		migrateDb(config, dbAdData)
 	} else if updateDbMode {
 		updateDb(config, dbAdData)
 	}
@@ -51,7 +55,7 @@ func printUsage(progName string) {
 	fmt.Println()
 	fmt.Println("Usage:")
 	fmt.Println()
-	fmt.Println("    " + progName + " configFile.json [--analyze]")
+	fmt.Println("    " + progName + " configFile.json [--analyze|--migratedb]")
 	fmt.Println()
 	fmt.Println("Version : " + Version)
 	fmt.Println("Build   : " + Build)
@@ -63,12 +67,21 @@ func analyzeDb(config Configuration, dbAdData *DbAdData) {
 	for _, search := range config.Searches {
 		fmt.Println("Search : ", search.Name)
 		adDatas, _ := dbAdData.GetAllAds(search)
+		sort.Sort(AdDataSortByDate(adDatas))
 		printTextAbridgedHeader()
-		// TODO order this by Ad Date !
 		for _, adData := range adDatas {
 			printTextAbridged(adData)
 		}
 		printTextAbridgedFooter()
+	}
+}
+
+func migrateDb(config Configuration, dbAdData *DbAdData) {
+	fmt.Println("migrating Database")
+	err := dbAdData.Migrate()
+	if err != nil {
+		fmt.Print(err.Error())
+		return
 	}
 }
 

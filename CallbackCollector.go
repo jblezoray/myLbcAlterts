@@ -43,6 +43,10 @@ func (ac *CallbackCollector) callbackAds(curads []AdData) error {
 
 		} else {
 			ad.MetaData_DateSeenFirst = time.Now()
+			t := ParseTextDate("", true)
+			if t != nil {
+				ad.Date = *t
+			}
 			ac.dbAdData.SaveAd(*ac.curSearch, ad)
 			ac.newAdsBySearch[*ac.curSearch] = append(ac.newAdsBySearch[*ac.curSearch], ad)
 		}

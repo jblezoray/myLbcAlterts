@@ -4,6 +4,7 @@ import (
 	"errors"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/PuerkitoBio/goquery"
 )
@@ -19,6 +20,11 @@ func parseAd(s *goquery.Selection) AdData {
 	var urgentFlag = strings.Count(dateStr, "Urgent") == 1
 	dateStr = strings.Replace(dateStr, "Urgent", "", -1)
 	dateStr = strings.TrimSpace(dateStr)
+	var date time.Time
+	tp := ParseTextDate(dateStr, true)
+	if tp != nil {
+		date = *tp
+	}
 
 	// parse url
 	url, exists := s.Find("a.list_item").Attr("href")
@@ -74,6 +80,7 @@ func parseAd(s *goquery.Selection) AdData {
 		Id:             id,
 		Title:          title,
 		DateStr:        dateStr,
+		Date:           date,
 		UrgentFlag:     urgentFlag,
 		Url:            url,
 		Price:          priceInt,

@@ -60,6 +60,10 @@ func printTextAbridgedHeader() {
 	fmt.Print("+------------+-------------------------------------+-----------------+------------+---+----------------------+---------------------------+-----------------+-----------------+\n")
 }
 
+func printTextAbridgedFooter() {
+	fmt.Print("+------------+-------------------------------------+-----------------+------------+---+----------------------+---------------------------+-----------------+-----------------+\n")
+}
+
 func printTextAbridged(ad AdData) {
 	var priceStr = ""
 	if ad.Price != AdDataNoPrice {
@@ -70,14 +74,16 @@ func printTextAbridged(ad AdData) {
 	if ad.UrgentFlag {
 		urgent = "X"
 	}
+	var date = ""
+	if !ad.Date.IsZero() {
+		date = dateFormat(ad.Date)
+	} else {
+		date = "\"" + ad.DateStr + "\""
+	}
 
 	fmt.Printf("| %10.10d | %-35.35s | %15.15s | %10.10s | %1s | %20.20s | %25.25s | %15s | %15s | \n",
-		ad.Id, ad.Title, ad.DateStr, priceStr, urgent, ad.LocationRegion, ad.LocationTown,
+		ad.Id, ad.Title, date, priceStr, urgent, ad.LocationRegion, ad.LocationTown,
 		dateFormat(ad.MetaData_DateSeenFirst), dateFormat(ad.MetaData_DateSeenLast))
-}
-
-func printTextAbridgedFooter() {
-	fmt.Print("+------------+-------------------------------------+-----------------+------------+---+----------------------+---------------------------+-----------------+-----------------+\n")
 }
 
 func dateFormat(t time.Time) string {

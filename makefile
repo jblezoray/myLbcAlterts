@@ -10,6 +10,10 @@ build:
 test:
 	go test -v
 
+testrun: clean build test 
+	./${BINARY} MyConf_v0.2.json --migratedb
+	./${BINARY} MyConf_v0.2.json --analyze
+
 install: test
 	go install ${LDFLAGS_f1}
 

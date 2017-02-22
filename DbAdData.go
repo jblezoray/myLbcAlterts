@@ -113,6 +113,7 @@ func (dbAdData *DbAdData) SaveAd(search Search, ad AdData) error {
 			return err
 		}
 		if previousAdData != nil {
+			migrateAd(previousAdData)
 			ad.MergeWithAd(previousAdData)
 		}
 
@@ -126,6 +127,66 @@ func (dbAdData *DbAdData) SaveAd(search Search, ad AdData) error {
 		return err
 	})
 	return err
+}
+
+func (dbAdData *DbAdData) Migrate() error {
+	err := dbAdData.boltDB.Update(func(tx *bolt.Tx) error {
+		// for each bucket
+		c := tx.Cursor()
+		for k, v := c.First(); k != nil; k, v = c.Next() {
+			// buckets have null values.
+			if v != nil {
+				continue
+			}
+			b := tx.Bucket(k)
+			if b == nil {
+				return nil
+			}
+
+			cAd := b.Cursor()
+			for id, adDataRaw := cAd.First(); id != nil; id, adDataRaw = cAd.Next() {
+				// read
+				if adDataRaw == nil {
+					continue
+				}
+				var adData *AdData
+				var err error
+				if adData, err = dbAdData.adUnmarshal(adDataRaw); err != nil {
+					return err
+				}
+
+				// update
+				migrateAd(adData)
+
+				// save
+				var adBytes []byte
+				adBytes, err = dbAdData.adMarshal(*adData)
+				if err != nil {
+					return err
+				}
+				var adKey = dbAdData.adKey(adData.Id)
+				err = b.Put(adKey, adBytes)
+				if err != nil {
+					return err
+				}
+			}
+		}
+		return nil
+	})
+	if err != nil {
+		return err
+	}
+
+	return dbAdData.SaveAndClose()
+}
+
+func migrateAd(adData *AdData) {
+	if adData.Date.IsZero() && adData.DateStr != "" {
+		t := ParseTextDate(adData.DateStr, false)
+		if t != nil {
+			adData.Date = *t
+		}
+	}
 }
 
 // SaveAndClose closes all open files descriptors in an DbAdData.
