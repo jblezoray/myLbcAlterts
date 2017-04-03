@@ -40,7 +40,7 @@ func (adData *AdData) MergeWithAd(otherOlderAdData *AdData) {
 	adData.MetaData_DateSeenFirst = otherOlderAdData.MetaData_DateSeenFirst
 }
 
-var patternA = regexp.MustCompile(`^([1-3]?[0-9]) ([a-zé]{3}), ([0-9]{2}):([0-9]{2})$`)
+var patternA = regexp.MustCompile(`^([1-3]?[0-9]) ([a-zé]{3,4}), ([0-9]{2}):([0-9]{2})$`)
 var patternB = regexp.MustCompile(`^(Hier|Aujourd'hui), ([0-9]{2}):([0-9]{2})$`)
 var monthFR = [...]string{"", "jan", "fév", "mars", "avr", "mai", "juin", "jul", "août", "sept", "oct", "nov", "déc"}
 
