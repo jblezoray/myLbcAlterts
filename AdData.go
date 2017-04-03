@@ -42,7 +42,7 @@ func (adData *AdData) MergeWithAd(otherOlderAdData *AdData) {
 
 var patternA = regexp.MustCompile(`^([1-3]?[0-9]) ([a-zé]{3}), ([0-9]{2}):([0-9]{2})$`)
 var patternB = regexp.MustCompile(`^(Hier|Aujourd'hui), ([0-9]{2}):([0-9]{2})$`)
-var monthFR = [...]string{"", "jan", "fév", "mar", "avr", "mai", "jun", "jul", "aoû", "sep", "oct", "nov", "déc"}
+var monthFR = [...]string{"", "jan", "fév", "mars", "avr", "mai", "juin", "jul", "août", "sept", "oct", "nov", "déc"}
 
 // ParseTextDate parses a "textual date" as scrapped on the website.
 // dateStr is the date in string format;
